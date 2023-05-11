@@ -22,3 +22,15 @@
 
     8. Rendering the Component: Finally, the component renders a form for the user to input text and select text properties, an input for image upload, a canvas element for the fabric.js canvas, and a button to add text to the canvas. The form fields and buttons are connected to the event handlers and state variables we've set up.
 
+
+#### Current Bugs:-
+
+a) The image keeps overflowing out of the canvas. I have no idea why. I have worked all night on it but still no clue.
+~~b) The color picker wont update the color of the text~~
+
+----
+
+#### What are the deprecated files?
+
+As you can see, there is a **deprecated(components)** folder and a **deprecated.txt** file. These files were actually the first version of this project. Since it had a lot of bugs, I decided to scrape it and start again.
+
