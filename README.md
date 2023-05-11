@@ -1,70 +1,24 @@
-# Getting Started with Create React App
+# Image-Editor App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### How this app works:-
 
-## Available Scripts
+    1. Setting up the Canvas: We're using the fabric.js library, which provides a powerful and flexible object model for working with HTML canvas. We create an instance of a fabric.Canvas and attach it to a canvas element in the DOM.
 
-In the project directory, you can run:
+    2. State Variables: We're using React's useState hook to manage various pieces of state in the application:
+        text: This is the text that the user inputs to place over the image.
+        color, font, size: These represent the color, font, and size of the text that the user inputs.
+        coords: This represents the x and y coordinates of where the text will be placed on the image.
+        backgroundColor: This is the color that will be used as the background color of the canvas.
 
-### `npm start`
+    3. Image Upload: When a user selects an image file to upload, we use a FileReader to read the data from the file. Once the data is available, we use fabric.Image.fromURL to create a new image object. We then scale and position the image to fit within the canvas, and set it as the background of the canvas.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+    4. Adding Text: When a user clicks the "Add Text" button, we create a new fabric.IText object with the specified properties (text, color, font, size, and coordinates) and add it to the canvas. The IText object is interactive and editable, so the user can click on the text to edit it.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+    5. Changing Background Color: When a user selects a new background color, we use fabric.Canvas.setBackgroundColor to change the background color of the canvas.
 
-### `npm test`
+    6. React Effects: We're using React's useEffect hook to perform side effects in our component. Specifically, we use an effect to update the background color of the canvas whenever the backgroundColor state changes.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+    7. React Event Handlers: We're using event handlers to respond to user interactions like text input, image upload, and button clicks. These handlers update the component's state, which in turn updates the canvas.
 
-### `npm run build`
+    8. Rendering the Component: Finally, the component renders a form for the user to input text and select text properties, an input for image upload, a canvas element for the fabric.js canvas, and a button to add text to the canvas. The form fields and buttons are connected to the event handlers and state variables we've set up.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
