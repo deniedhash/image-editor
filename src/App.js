@@ -1,82 +1,177 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { fabric } from "fabric";
-import ImageUpload from "./components/ImageUpload";
-import TextEditor from "./components/TextEditor";
-import DownloadButton from "./components/DownloadButton";
-import "./App.css";
+import { TextField, Button } from "@mui/material";
 
-function App() {
-  const [canvas, setCanvas] = useState(null);
-  const [imageURL, setImageURL] = useState(null);
+const App = () => {
+  const canvasRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
-    const fabricCanvas = new fabric.Canvas("canvas");
-    setCanvas(fabricCanvas);
+    const canvas = new fabric.Canvas(canvasRef.current, {
+      width: 960,
+      height: 540,
+      backgroundColor: "black",
+    });
+
+    // Set Canvas object on window for debugging
+    window.canvas = canvas;
   }, []);
 
-  useEffect(() => {
-    if (canvas && imageURL) {
-      fabric.Image.fromURL(imageURL, (img) => {
-        img.scaleToWidth(canvas.width);
-        img.scaleToHeight(canvas.height);
-        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+  const handleUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (f) => {
+      const data = f.target.result;
+      fabric.Image.fromURL(data, (img) => {
+        // Calculate the scale
+        const scaleX = canvasRef.current.width / img.width;
+        const scaleY = canvasRef.current.height / img.height;
+        const scale = Math.min(scaleX, scaleY);
+
+        // Scale the image
+        img.scaleX = scale;
+        img.scaleY = scale;
+
+        // Set the image as the background of the canvas
+        window.canvas.setBackgroundImage(
+          img,
+          window.canvas.renderAll.bind(window.canvas),
+          {
+            top: 0,
+            left: 0,
+            originX: "left",
+            originY: "top",
+            scaleX: scaleX,
+            scaleY: scaleY,
+          }
+        );
+
+        // Set the canvas background color
+        window.canvas.setBackgroundColor(
+          backgroundColor,
+          window.canvas.renderAll.bind(window.canvas)
+        );
       });
-    }
-  }, [canvas, imageURL]);
-
-  const handleImageUpload = (url) => {
-    setImageURL(url);
+    };
+    reader.readAsDataURL(file);
   };
 
-  const handleTextChange = (e) => {
-    const newText = new fabric.Text(e.target.value, {
-      left: 10,
-      top: 10,
-      fontFamily: "Arial",
-      fontSize: 30,
-      fill: "#000",
+  const [text, setText] = useState("");
+  const [color, setColor] = useState("black");
+  const [font, setFont] = useState("Arial");
+  const [size, setSize] = useState(16);
+  const [coords, setCoords] = useState({ x: 0, y: 0 });
+  const [backgroundColor, setBackgroundColor] = useState("");
+
+  const handleTextChange = (event) => setText(event.target.value);
+  const handleColorChange = (event) => setColor(event.target.value);
+  const handleFontChange = (event) => setFont(event.target.value);
+  const handleSizeChange = (event) => setSize(event.target.value);
+  //   const handleCoordsChange = (event) => setCoords(event.target.value);
+
+  useEffect(() => {
+    if (window.canvas) {
+      window.canvas.setBackgroundColor(
+        backgroundColor,
+        window.canvas.renderAll.bind(window.canvas)
+      );
+    }
+  }, [backgroundColor]);
+
+  const addText = () => {
+    const textObj = new fabric.IText(text, {
+      left: coords.x,
+      top: coords.y,
+      fill: color,
+      fontFamily: font,
+      fontSize: size,
+      editable: true,
     });
-    canvas.add(newText);
-    canvas.setActiveObject(newText);
+    window.canvas.add(textObj);
+    window.canvas.setActiveObject(textObj);
   };
 
-  const handleFontChange = (e) => {
-    const activeObject = canvas.getActiveObject();
-    if (activeObject && activeObject.type === "text") {
-      activeObject.set("fontFamily", e.target.value);
-      canvas.renderAll();
-    }
-  };
-
-  const handleFontSizeChange = (e) => {
-    const activeObject = canvas.getActiveObject();
-    if (activeObject && activeObject.type === "text") {
-      activeObject.set("fontSize", parseInt(e.target.value));
-      canvas.renderAll();
-    }
-  };
-
-  const handleColorChange = (color) => {
-    const activeObject = canvas.getActiveObject();
-    if (activeObject && activeObject.type === "text") {
-      activeObject.set("fill", color);
-      canvas.renderAll();
-    }
+  const download = () => {
+    const dataUrl = window.canvas.toDataURL({ format: "png" });
+    const link = document.createElement("a");
+    link.download = "edited_image.png";
+    link.href = dataUrl;
+    link.click();
   };
 
   return (
-    <div className="App">
-      <ImageUpload onUpload={handleImageUpload} />
-      <TextEditor
-        onTextChange={handleTextChange}
-        onFontChange={handleFontChange}
-        onFontSizeChange={handleFontSizeChange}
-        onColorChange={handleColorChange}
+    <div>
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={handleUpload}
       />
-      <canvas id="canvas" width="800" height="600"></canvas>
-      {canvas && <DownloadButton canvas={canvas} />}
+      <Button onClick={() => fileInputRef.current.click()}>Upload Image</Button>
+      <TextField
+        value={text}
+        onChange={handleTextChange}
+        placeholder="Enter text"
+      />
+      <label htmlFor="textColor">Text Color: </label>
+      <input
+        type="color"
+        id="textColor"
+        name="textColor"
+        value={color}
+        onChange={handleColorChange}
+      />
+      <label htmlFor="textSize">Text Size: </label>
+      <input
+        type="number"
+        id="textSize"
+        name="textSize"
+        value={size}
+        onChange={handleSizeChange}
+      />
+      <label htmlFor="font">Font: </label>
+      <select id="font" name="font" value={font} onChange={handleFontChange}>
+        <option value="Arial">Arial</option>
+        <option value="Helvetica">Helvetica</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Verdana">Verdana</option>
+        <option value="Trebuchet MS">Trebuchet MS</option>
+        <option value="Georgia">Georgia</option>
+      </select>
+
+      <label htmlFor="xCoord">X Coordinate: </label>
+      <input
+        type="number"
+        id="xCoord"
+        name="xCoord"
+        value={coords.x}
+        onChange={(e) => setCoords({ ...coords, x: Number(e.target.value) })}
+      />
+
+      <label htmlFor="yCoord">Y Coordinate: </label>
+      <input
+        type="number"
+        id="yCoord"
+        name="yCoord"
+        value={coords.y}
+        onChange={(e) => setCoords({ ...coords, y: Number(e.target.value) })}
+      />
+
+      <Button onClick={addText}>Add Text</Button>
+      <label htmlFor="backgroundColor">Background Color: </label>
+      <input
+        type="color"
+        id="backgroundColor"
+        name="backgroundColor"
+        value={backgroundColor}
+        onChange={(e) => setBackgroundColor(e.target.value)}
+      />
+
+      <Button onClick={download}>Download</Button>
+      <canvas ref={canvasRef} id="c" />
     </div>
   );
-}
+};
 
 export default App;
