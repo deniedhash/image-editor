@@ -25,7 +25,7 @@
 
 #### Current Bugs:-
 
-a) The image keeps overflowing out of the canvas. I have no idea why. I have worked all night on it but still no clue.
+a) The image keeps overflowing out of the canvas. I have no idea why. I have worked all night on it but still no clue.  
 ~~b) The color picker wont update the color of the text~~
 
 ----
